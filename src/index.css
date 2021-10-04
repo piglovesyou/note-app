@@ -3,10 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  @apply bg-gray-50;
-}
-
 body {
   background-color: #f3f3f3;
   min-height: 100vh;
@@ -31,10 +27,11 @@ body {
 }
 
 .xcontainer {
-  @apply flex flex-col mx-auto bg-gray-100 shadow;
+  @apply flex flex-col mx-auto bg-gray-100 shadow-sm;
   background-color: #e8e8e8;
   min-width: 340px;
   max-width: 700px;
+  min-height: 100vh;
 }
 
 .xtoolbar {
@@ -60,10 +57,10 @@ body {
 }
 
 .xitem {
-  @apply transition-all cursor-pointer p-4 bg-white shadow-md text-sm;
+  @apply transition-all cursor-pointer p-4 bg-white shadow-md text-sm h-24;
   width: 112px;
-  /*grid-column: span 4;*/
 }
+
 .xitem:hover {
   @apply bg-gray-200;
 }
