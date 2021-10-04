@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 import { debounce, throttle } from 'lodash'
 import md5 from 'md5'
 import { Note, Notes, WriteNoteInput } from '../../__generated__/types'
-import { client } from '../apollo-client'
+import { client } from '../client'
 
 const { cache } = client
 

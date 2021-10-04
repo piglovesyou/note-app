@@ -9,7 +9,7 @@ import React, {
 } from 'react'
 import TextArea from 'react-textarea-autosize'
 import ReactTooltip from 'react-tooltip'
-import { formatDateObj } from './format'
+import { formatAgo } from './date'
 import { writeNote, writeNoteDebounced } from './graphql/local-storage/write'
 import { currIdVar, useCurrId } from './states/curr-id'
 import { subscribeTick, unsubscribeTick } from './timer'
@@ -92,7 +92,7 @@ const LastSavedIndicator: FC<{
 
   return (
     <span data-tip={dateStr} data-place="bottom">
-      {d && `${formatDateObj(d)}`}
+      {d && `${formatAgo(d)}`}
     </span>
   )
 }

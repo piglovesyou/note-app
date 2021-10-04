@@ -1,7 +1,7 @@
 import { DocumentNode, gql } from '@apollo/client'
 import { expect } from '@jest/globals'
 import { Notes } from '../__generated__/types'
-import { client, restoreCache } from './apollo-client'
+import { client, restoreCache } from './client'
 import { writeNote } from './local-storage/write'
 
 const NOTES_QUERY = gql`
@@ -38,7 +38,7 @@ async function queryNotes(query: DocumentNode): Promise<Notes> {
 }
 
 // XXX: Run serially
-describe('apollo-client.test.ts', () => {
+describe('client.ts', () => {
   beforeEach(async () => {
     restoreCache(client.cache)
     // Need to stabilize somehow
