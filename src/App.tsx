@@ -1,14 +1,10 @@
 import { gql } from '@apollo/client'
-import TimeAgo from 'javascript-time-ago'
-import en from 'javascript-time-ago/locale/en.json'
 import React, { FC, useCallback, useEffect, useRef } from 'react'
 import TextArea from 'react-textarea-autosize'
+import { formatDate } from './format'
 import { writeNote, writeNoteDebounced } from './graphql/local-storage/write'
 import { currIdVar, useCurrId } from './states/curr-id'
 import { Note, useAllNotesQuery, useNoteQuery } from './__generated__/types'
-
-TimeAgo.addDefaultLocale(en)
-const timeAgo = new TimeAgo('en-US')
 
 gql`
   query AllNotes {
@@ -26,17 +22,6 @@ gql`
 gql`
   query Note($id: String) {
     note(id: $id) {
-      id
-      text
-      title
-      updated_at
-    }
-  }
-`
-
-gql`
-  query LastNote {
-    lastNote {
       id
       text
       title
@@ -71,7 +56,7 @@ const Toolbar: FC = () => {
 
 const INITIAL_TITLE = 'Untitled'
 
-const Editor: FC<{}> = function ({}) {
+const Editor: FC = function () {
   const currId = useCurrId()
   const note = useNoteQuery({ variables: { id: currId } })?.data?.note
   const titleRef = useRef<HTMLInputElement | null>(null)
@@ -103,7 +88,7 @@ const Editor: FC<{}> = function ({}) {
 
   return (
     <div className="curr my-8 mx-8 flex flex-col">
-      <div className="curr__toolbar flex mb-2">
+      <div className="curr__toolbar flex mb-2 items-center">
         <input
           ref={titleRef}
           className="xtitle"
@@ -113,24 +98,28 @@ const Editor: FC<{}> = function ({}) {
         />
         <span className="spacer" />
         <div className="curr_last-udpated text-faint">
-          {note?.updated_at &&
-            `Last update: ${timeAgo.format(new Date(note?.updated_at))}`}
+          {note?.updated_at && `Saved ${formatDate(note?.updated_at)}`}
         </div>
       </div>
 
       <TextArea
-        minRows={4}
+        minRows={8}
         maxRows={16}
+        maxLength={2000}
         ref={textRef}
         className="xtextarea"
         defaultValue={note?.text || undefined}
         onChange={writeNoteBuffered}
       />
+
+      <div className="text-right text-faint-faint h-4 mt-1">
+        {textRef.current?.value ? `${textRef.current.value.length} / 2000` : ''}
+      </div>
     </div>
   )
 }
 
-const Notes: FC<{}> = ({}) => {
+const Notes: FC = () => {
   const currId = useCurrId()
   const { data } = useAllNotesQuery()
 
@@ -141,18 +130,17 @@ const Notes: FC<{}> = ({}) => {
       <Editor />
 
       <div className="xitem-container">
-        {data?.notes?.items.map((n: Note, i: number) => {
+        {data?.notes?.items.map((n: Note) => {
           if (n.id === currId) return undefined
           return (
-            <div
-              className="xitem "
-              key={i}
-              onClick={() => {
-                currIdVar(n.id)
-              }}
-            >
-              <div className="ellipsis">{n.title}</div>
-              <div className="text-faint multi-ellipsis">{n.text}</div>
+            <div key={n.id}>
+              <div className="xitem mb-1" onClick={() => currIdVar(n.id)}>
+                <div className="ellipsis">{n.title}</div>
+                <div className="text-faint multi-ellipsis">{n.text}</div>
+              </div>
+              <div className="text-right text-faint-faint">
+                {formatDate(n.updated_at)}
+              </div>
             </div>
           )
         })}

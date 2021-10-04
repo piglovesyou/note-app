@@ -1,6 +1,5 @@
 import { DocumentNode, gql } from '@apollo/client'
 import { expect } from '@jest/globals'
-import { debounce, throttle } from 'lodash'
 import { Notes } from '../__generated__/types'
 import { client, restoreCache } from './apollo-client'
 import { writeNote } from './local-storage/write'
@@ -152,73 +151,6 @@ describe('apollo-client.test.ts', () => {
         }
       `)
   })
-
-  // test("create new", async () => {
-  //   writeNote({
-  //     title: "title",
-  //     text: "text",
-  //   });
-  //
-  //   const { id } = createNewNote();
-  //
-  //   expect(await queryNotes(NOTES_QUERY)).toMatchInlineSnapshot(`
-  //     Object {
-  //       "__typename": "Notes",
-  //       "items": Array [
-  //         Object {
-  //           "__typename": "Note",
-  //           "text": "",
-  //           "title": "",
-  //         },
-  //         Object {
-  //           "__typename": "Note",
-  //           "text": "text",
-  //           "title": "title",
-  //         },
-  //       ],
-  //     }
-  //   `);
-  //
-  //   writeNote({
-  //     id,
-  //     title: "title...",
-  //     text: "text...",
-  //   });
-  //
-  //   expect(await queryNotes(NOTES_QUERY)).toMatchInlineSnapshot(`
-  //     Object {
-  //       "__typename": "Notes",
-  //       "items": Array [
-  //         Object {
-  //           "__typename": "Note",
-  //           "text": "text...",
-  //           "title": "title...",
-  //         },
-  //         Object {
-  //           "__typename": "Note",
-  //           "text": "text",
-  //           "title": "title",
-  //         },
-  //       ],
-  //     }
-  //   `);
-  // });
-
-  test('debounce', async () => {
-    function yeah(s: string) {
-      console.log(`yeah ${s}`)
-    }
-    const yeahD = debounce(yeah, 1000)
-
-    for (const t of Array.from(Array(50)).map((_, i) => i)) {
-      await timeout(10)
-      yeahD(String(t))
-    }
-
-    const yeahT = throttle()
-
-    await timeout(2000)
-  }, 100000)
 })
 
 function timeout(ms: number) {
