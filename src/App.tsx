@@ -1,7 +1,14 @@
 import { gql } from '@apollo/client'
-import React, { FC, useCallback, useEffect, useRef } from 'react'
+import React, {
+  FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import TextArea from 'react-textarea-autosize'
-import { formatDate } from './format'
+import { formatDateObj, formatDateStr } from './format'
 import { writeNote, writeNoteDebounced } from './graphql/local-storage/write'
 import { currIdVar, useCurrId } from './states/curr-id'
 import { Note, useAllNotesQuery, useNoteQuery } from './__generated__/types'
@@ -56,11 +63,44 @@ const Toolbar: FC = () => {
 
 const INITIAL_TITLE = 'Untitled'
 
+function parseDateSafe(dateStr: string | null | undefined): null | Date {
+  return dateStr ? new Date(dateStr) : null
+}
+
+const LastSavedIndicator: FC<{ note: Note | null | undefined }> = ({
+  note,
+}) => {
+  // Prevent to parse date string everytime to render
+  const dateObj = useMemo(() => parseDateSafe(note?.updated_at), [note?.id])
+
+  // Hold date to update later
+  const [d, setD] = useState(dateObj)
+  const [timer, setTimer] = useState<
+    undefined | ReturnType<typeof setInterval>
+  >(undefined)
+  useEffect(() => {
+    setTimer(
+      setInterval(() => {
+        if (note?.updated_at) setD(parseDateSafe(note?.updated_at))
+      }, 10 * 1000)
+    )
+    return () => {
+      if (timer) clearInterval(timer)
+    }
+  }, [note?.id, note?.updated_at])
+  return (
+    <div className="text-faint">
+      {dateObj && `Last update: ${formatDateObj(dateObj)}`}
+    </div>
+  )
+}
+
 const Editor: FC = function () {
   const currId = useCurrId()
   const note = useNoteQuery({ variables: { id: currId } })?.data?.note
   const titleRef = useRef<HTMLInputElement | null>(null)
   const textRef = useRef<HTMLTextAreaElement | null>(null)
+  const textValue = textRef.current?.value
 
   useEffect(() => {
     if (note) {
@@ -84,7 +124,7 @@ const Editor: FC = function () {
     } else {
       writeNoteDebounced({ id: currId, ...input })
     }
-  }, [currId, titleRef.current?.value, textRef.current?.value])
+  }, [currId, titleRef.current?.value, textValue])
 
   return (
     <div className="curr my-8 mx-8 flex flex-col">
@@ -97,12 +137,11 @@ const Editor: FC = function () {
           onChange={writeNoteBuffered}
         />
         <span className="spacer" />
-        <div className="curr_last-udpated text-faint">
-          {note?.updated_at && `Saved ${formatDate(note?.updated_at)}`}
-        </div>
+        <LastSavedIndicator key={note?.updated_at} note={note} />
       </div>
 
       <TextArea
+        key={note?.id}
         minRows={8}
         maxRows={16}
         maxLength={2000}
@@ -113,7 +152,7 @@ const Editor: FC = function () {
       />
 
       <div className="text-right text-faint-faint h-4 mt-1">
-        {textRef.current?.value ? `${textRef.current.value.length} / 2000` : ''}
+        {textValue ? `${textValue.length} / 2000` : ''}
       </div>
     </div>
   )
@@ -139,7 +178,7 @@ const Notes: FC = () => {
                 <div className="text-faint multi-ellipsis">{n.text}</div>
               </div>
               <div className="text-right text-faint-faint">
-                {formatDate(n.updated_at)}
+                {formatDateStr(n.updated_at)}
               </div>
             </div>
           )

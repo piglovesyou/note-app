@@ -57,13 +57,14 @@ body {
 
 .xitem-container {
   @apply mx-auto mb-8 inline-grid;
-  gap: 32px 16px;
+  gap: 24px 16px;
   grid-template-columns: repeat(4, 1fr);
 }
 
 .xitem {
-  @apply cursor-pointer p-4 bg-white shadow-md text-sm h-24;
+  @apply cursor-pointer px-4 py-3 bg-white shadow-md text-sm;
   transition: background-color 0.1s linear;
+  height: 7.5em;
   width: 112px;
 }
 
