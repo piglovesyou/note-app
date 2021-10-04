@@ -2,6 +2,7 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://piglovesyou.github.io/note-app/",
   "dependencies": {
     "@apollo/client": "^3.4.15",
     "@craco/craco": "^6.3.0",
