@@ -136,7 +136,8 @@ const Editor: FC = function () {
         <div className="text-faint">
           {note?.updated_at && (
             <span>
-              Last update: <LastSavedIndicator dateStr={note?.updated_at} />
+              Last update:{' '}
+              <LastSavedIndicator key={note?.id} dateStr={note?.updated_at} />
             </span>
           )}
         </div>
