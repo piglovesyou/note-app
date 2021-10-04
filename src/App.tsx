@@ -8,9 +8,10 @@ import React, {
   useState,
 } from 'react'
 import TextArea from 'react-textarea-autosize'
-import { formatDateObj, formatDateStr } from './format'
+import { formatDateObj } from './format'
 import { writeNote, writeNoteDebounced } from './graphql/local-storage/write'
 import { currIdVar, useCurrId } from './states/curr-id'
+import { subscribeTick, unsubscribeTick } from './timer'
 import { Note, useAllNotesQuery, useNoteQuery } from './__generated__/types'
 
 gql`
@@ -67,32 +68,27 @@ function parseDateSafe(dateStr: string | null | undefined): null | Date {
   return dateStr ? new Date(dateStr) : null
 }
 
-const LastSavedIndicator: FC<{ note: Note | null | undefined }> = ({
-  note,
-}) => {
+const LastSavedIndicator: FC<{
+  dateStr: string | null | undefined
+}> = ({ dateStr }) => {
   // Prevent to parse date string everytime to render
-  const dateObj = useMemo(() => parseDateSafe(note?.updated_at), [note?.id])
+  const dateObj = useMemo(() => parseDateSafe(dateStr), [dateStr])
 
   // Hold date to update later
   const [d, setD] = useState(dateObj)
-  const [timer, setTimer] = useState<
-    undefined | ReturnType<typeof setInterval>
-  >(undefined)
+
+  const handleTick = useCallback(() => {
+    dateStr && setD(parseDateSafe(dateStr))
+  }, [dateStr])
+
   useEffect(() => {
-    setTimer(
-      setInterval(() => {
-        if (note?.updated_at) setD(parseDateSafe(note?.updated_at))
-      }, 10 * 1000)
-    )
+    subscribeTick(handleTick)
     return () => {
-      if (timer) clearInterval(timer)
+      unsubscribeTick(handleTick)
     }
-  }, [note?.id, note?.updated_at])
-  return (
-    <div className="text-faint">
-      {dateObj && `Last update: ${formatDateObj(dateObj)}`}
-    </div>
-  )
+  }, [handleTick])
+
+  return <span>{d && `${formatDateObj(d)}`}</span>
 }
 
 const Editor: FC = function () {
@@ -137,11 +133,16 @@ const Editor: FC = function () {
           onChange={writeNoteBuffered}
         />
         <span className="spacer" />
-        <LastSavedIndicator key={note?.updated_at} note={note} />
+        <div className="text-faint">
+          {note?.updated_at && (
+            <span>
+              Last update: <LastSavedIndicator dateStr={note?.updated_at} />
+            </span>
+          )}
+        </div>
       </div>
 
       <TextArea
-        key={note?.id}
         minRows={8}
         maxRows={16}
         maxLength={2000}
@@ -178,7 +179,7 @@ const Notes: FC = () => {
                 <div className="text-faint multi-ellipsis">{n.text}</div>
               </div>
               <div className="text-right text-faint-faint">
-                {formatDateStr(n.updated_at)}
+                <LastSavedIndicator key={n.id} dateStr={n.updated_at} />
               </div>
             </div>
           )
