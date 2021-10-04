@@ -10,7 +10,7 @@ import React, {
 import TextArea from 'react-textarea-autosize'
 import ReactTooltip from 'react-tooltip'
 import { writeNote, writeNoteDebounced } from './data/write'
-import { formatAgo } from './date'
+import { formatAgo, parseDateSafe } from './date'
 import { currIdVar, useCurrId } from './states/curr-id'
 import { subscribeTick, unsubscribeTick } from './timer'
 import { Note, useAllNotesQuery, useNoteQuery } from './__generated__/helpers'
@@ -65,10 +65,6 @@ const Toolbar: FC = () => {
 }
 
 const INITIAL_TITLE = 'Untitled'
-
-function parseDateSafe(dateStr: string | null | undefined): null | Date {
-  return dateStr ? new Date(dateStr) : null
-}
 
 const LastSavedIndicator: FC<{
   dateStr: string | null | undefined

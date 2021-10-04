@@ -5,3 +5,7 @@ TimeAgo.addDefaultLocale(en)
 const timeAgo = new TimeAgo('en-US')
 
 export const formatAgo = (dateObj: Date) => timeAgo.format(dateObj)
+
+export function parseDateSafe(dateStr: string | null | undefined): null | Date {
+  return dateStr ? new Date(dateStr) : null
+}

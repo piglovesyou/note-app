@@ -1,6 +1,6 @@
 import { DocumentNode, gql } from '@apollo/client'
 import { expect } from '@jest/globals'
-import { Notes } from '../__generated__/types'
+import { Notes } from '../__generated__/helpers'
 import { client, restoreCache } from './client'
 import { writeNote } from './write'
 
