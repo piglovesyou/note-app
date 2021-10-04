@@ -5,7 +5,7 @@ A sample implementation of LocalStorage-only React note-taking app.
 https://piglovesyou.github.io/note-app/
 
 <p align="center">
-<img width="60%" src="https://user-images.githubusercontent.com/217530/135855138-79b2ecd8-88a7-453c-9240-599afcfc9de6.png" />
+<a href="https://piglovesyou.github.io/note-app/"><img width="60%" src="https://user-images.githubusercontent.com/217530/135855138-79b2ecd8-88a7-453c-9240-599afcfc9de6.png" /></a>
 </p>
 
 ## Tech Stack
