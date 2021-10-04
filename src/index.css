@@ -2,3 +2,68 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  @apply bg-gray-50;
+}
+
+body {
+  background-color: #f3f3f3;
+  min-height: 100vh;
+}
+
+.spacer {
+  @apply flex-1;
+}
+
+.text-faint {
+  @apply text-gray-500 text-sm;
+}
+.ellipsis {
+  @apply overflow-hidden whitespace-pre-wrap overflow-ellipsis;
+}
+
+.multi-ellipsis {
+  @apply overflow-hidden overflow-ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.xcontainer {
+  @apply flex flex-col mx-auto bg-gray-100 shadow;
+  background-color: #e8e8e8;
+  min-width: 340px;
+  max-width: 700px;
+}
+
+.xtoolbar {
+  @apply flex py-2 px-4 items-center bg-gray-300 gap-4;
+}
+
+.xtitle {
+  @apply py-1 font-bold bg-transparent;
+}
+.xtitle:hover,
+.xtitle:focus {
+  @apply bg-yellow-100;
+}
+
+.xtextarea {
+  @apply shadow-md p-4;
+}
+
+.xitem-container {
+  @apply mx-auto mb-8 inline-grid;
+  gap: 32px 16px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.xitem {
+  @apply transition-all cursor-pointer p-4 bg-white shadow-md text-sm;
+  width: 112px;
+  /*grid-column: span 4;*/
+}
+.xitem:hover {
+  @apply bg-gray-200;
+}
