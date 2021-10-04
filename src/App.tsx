@@ -8,6 +8,7 @@ import React, {
   useState,
 } from 'react'
 import TextArea from 'react-textarea-autosize'
+import ReactTooltip from 'react-tooltip'
 import { formatDateObj } from './format'
 import { writeNote, writeNoteDebounced } from './graphql/local-storage/write'
 import { currIdVar, useCurrId } from './states/curr-id'
@@ -44,9 +45,10 @@ const Toolbar: FC = () => {
   const canCreate = Boolean(currId && note?.title)
   return (
     <div className="xtoolbar">
-      <div className="font-bold mr">🖋 Memo</div>
+      <div className="font-bold mr">🖋 My Note</div>
       <span className="spacer" />
       <button
+        data-tip={`Save "${note?.title}" and create a new note`}
         className="py-1.5 px-4 rounded bg-pink-500 text-white"
         style={{ visibility: canCreate ? 'visible' : 'hidden' }}
         onClick={(e) => {
@@ -88,7 +90,11 @@ const LastSavedIndicator: FC<{
     }
   }, [handleTick])
 
-  return <span>{d && `${formatDateObj(d)}`}</span>
+  return (
+    <span data-tip={dateStr} data-place="bottom">
+      {d && `${formatDateObj(d)}`}
+    </span>
+  )
 }
 
 const Editor: FC = function () {
@@ -164,6 +170,10 @@ const Notes: FC = () => {
   const currId = useCurrId()
   const { data } = useAllNotesQuery()
 
+  useEffect(() => {
+    ReactTooltip.rebuild()
+  }, [currId])
+
   return (
     <div className="xcontainer">
       <Toolbar />
@@ -175,7 +185,11 @@ const Notes: FC = () => {
           if (n.id === currId) return undefined
           return (
             <div key={n.id}>
-              <div className="xitem mb-1" onClick={() => currIdVar(n.id)}>
+              <div
+                data-tip={`Open "${n.title}"`}
+                className="xitem mb-1"
+                onClick={() => currIdVar(n.id)}
+              >
                 <div className="ellipsis">{n.title}</div>
                 <div className="text-faint multi-ellipsis">{n.text}</div>
               </div>
@@ -186,6 +200,8 @@ const Notes: FC = () => {
           )
         })}
       </div>
+
+      <ReactTooltip effect="solid" />
     </div>
   )
 }
@@ -193,6 +209,7 @@ const Notes: FC = () => {
 const App: FC = () => {
   const { data } = useAllNotesQuery()
 
+  // Load last note to edit
   const lastId = data?.notes?.items[0]?.id
   useEffect(() => {
     // Need to set variable outside of the rendering context
