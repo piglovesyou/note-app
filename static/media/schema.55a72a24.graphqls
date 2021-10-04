@@ -1,0 +1,22 @@
+type Note {
+  id: ID!
+  title: String!
+  text: String!
+  updated_at: String!
+}
+
+input WriteNoteInput {
+  id: String
+  title: String
+  text: String
+}
+
+type Notes {
+  items: [Note!]!
+}
+
+type Query {
+  note(id: String): Note
+  lastNote: Note
+  notes: Notes
+}
