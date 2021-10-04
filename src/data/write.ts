@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
-import { debounce, throttle } from 'lodash'
+import { debounce } from 'lodash'
 import md5 from 'md5'
-import { Note, Notes, WriteNoteInput } from '../../__generated__/types'
-import { client } from '../client'
+import { Note, Notes, WriteNoteInput } from '../__generated__/helpers'
+import { client } from './client'
 
 const { cache } = client
 
@@ -68,10 +68,6 @@ function appendNoteIfNecessary(note: Note): void {
   }
 }
 
-// export function createNewNote(): Note {
-//   return writeNote({ id: generateId() });
-// }
-
 export function writeNote(input: WriteNoteInput): Note {
   const id = input.id || generateId()
 
@@ -98,4 +94,3 @@ export function writeNote(input: WriteNoteInput): Note {
 }
 
 export const writeNoteDebounced = debounce(writeNote, 100)
-export const writeNoteThrottled = throttle(writeNote, 100)

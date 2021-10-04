@@ -9,11 +9,11 @@ import React, {
 } from 'react'
 import TextArea from 'react-textarea-autosize'
 import ReactTooltip from 'react-tooltip'
+import { writeNote, writeNoteDebounced } from './data/write'
 import { formatAgo } from './date'
-import { writeNote, writeNoteDebounced } from './graphql/local-storage/write'
 import { currIdVar, useCurrId } from './states/curr-id'
 import { subscribeTick, unsubscribeTick } from './timer'
-import { Note, useAllNotesQuery, useNoteQuery } from './__generated__/types'
+import { Note, useAllNotesQuery, useNoteQuery } from './__generated__/helpers'
 
 gql`
   query AllNotes {
@@ -113,7 +113,7 @@ const Editor: FC = function () {
       textRef.current!.value = ''
       titleRef.current?.select()
     }
-  }, [note?.id])
+  }, [note, note?.id])
 
   const writeNoteBuffered = useCallback(() => {
     const input = {
@@ -126,7 +126,7 @@ const Editor: FC = function () {
     } else {
       writeNoteDebounced({ id: currId, ...input })
     }
-  }, [currId, titleRef.current?.value, textValue])
+  }, [currId])
 
   return (
     <div className="curr my-8 mx-8 flex flex-col">
@@ -215,6 +215,7 @@ const App: FC = () => {
     // Need to set variable outside of the rendering context
     // https://github.com/apollographql/apollo-client/issues/6188#issuecomment-796382651
     currIdVar(lastId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return <Notes />
